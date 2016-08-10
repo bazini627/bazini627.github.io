@@ -27,11 +27,6 @@
             margin-right: 20px;
             color: #001323;
         }
-        h2 {
-            /* display: inline-block; */
-            text-align: center;
-            color: #001323;
-        }
         #map {
             width: 80%;
             height: 540px;
@@ -81,10 +76,10 @@
                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CARTO</a>'
                }).addTo(mapObj);
                
-               // RLRPMP Layer
+               // Housing Voucher Layer
                var vizjson_url = 'https://bazini627.carto.com/api/v2/viz/a28f263a-328f-11e6-9aa6-0e787de82d45/viz.json';
                
-               // Adding RLRPMP layer to map
+               // Adding Housing Voucher layer to map
                cartodb.createLayer(mapObj, vizjson_url)
                   .addTo(mapObj)
                   .done(function(layer) {
