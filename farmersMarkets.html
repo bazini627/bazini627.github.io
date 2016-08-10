@@ -1,0 +1,104 @@
+<!DOCYTPE html>
+   <html>
+      
+      <head>
+         <meta charset=utf-8 />
+         <title>Richmond Farmers Markets Accepting CalFresh</title>
+         <meta name='viewport' content='initial-scale=1, maximum-scale=1, user-scalable=no' />
+         
+         <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+         <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js'></script>
+         
+         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+         <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato" />
+         <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
+         <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
+         
+         <style>
+            body {
+               margin: 0;
+               padding: 0;
+               background: whitesmoke;
+               font-family: Lato, sans-serif;
+               color: #0D0000;
+            }
+            header {
+               padding: 6px 10%;
+            }
+            h1 {
+               text-align: center;
+               margin-right: 20px;
+               color: #001323;
+            }
+            #map {
+               width: 80%;
+               height: 540px;
+               margin: 10px auto;
+            }
+            footer {
+               padding: 6px 10%;
+               width: 80%;
+            }
+            p {
+               font-size: 1em;
+               color: #001323;
+            }
+            
+         </style>
+      </head>
+      
+      <body>
+         <header>
+            <h1>Richmond Farmers Markets Accepting CalFresh</h1>
+         </header>
+         
+         <div id='map'></div>
+         
+         <footer>
+            <p>Map authored by Matthew Bacinskas</p>
+            <p>This map shows the number of farmers markets in Richmond, CA that accept CalFresh (Califorina's way of implementing SNAP).  Data was downloaded from the <a href="http://www.fns.usda.gov/ebt/snap-and-farmers-markets">United States Department of Agriculture</a> website.</p>
+            <!-- <p></p> -->
+         </footer>
+         
+         <script>
+            var map;
+            var targetDiv = 'map';
+            
+            var options = {
+               center: [37.935758, -122.347749],
+               zoom: 11
+            }
+            
+            map = L.map(targetDiv, options);
+            
+            // Our tile layer
+            var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, INTERMAP, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), ESRI (Thailand), TomTom, 2012'});
+            map.addLayer(tiles);
+            
+            // Our Farmers Markets
+            var farmersMarkets = ['North Richmond Roots and Restoration', 'Richmond Farmers Market', 'Richmond Main Street Farmers Market'];
+            
+            // Our Farmers Markets Addresses
+            var farmersMarketsAddy = ['323 Brookside Drive, Richmond, CA 94801', '24th Street & Barrett, Richmond, CA 94805', '1523 Nevin Plaza, Richmond, CA 94801'];
+            
+            // Our Coordinates for our Farmers Markets
+            var farmersMarketsCoords = [
+               [37.9651967, -122.36639],
+               [37.9382414, -122.3457774],
+               [37.936988, -122.354809]
+            ];
+            
+            // Loop through our arrays and clustering/plot points
+            var markers = new L.MarkerClusterGroup();
+            
+            for (var i = 0; i < farmersMarkets.length; i++) {
+              
+               var popup = "<b>"+farmersMarkets[i]+"</b><br>" + "<b>Address</b>: " + farmersMarketsAddy[i];
+               
+               var clusterPoint = L.marker(farmersMarketsCoords[i]).bindPopup(popup);
+               markers.addLayer(clusterPoint);
+            }
+            map.addLayer(markers);
+         </script>
+      </body>
+   </html>
