@@ -6,10 +6,11 @@
          <title>Richmond Farmers Markets Accepting CalFresh</title>
          <meta name='viewport' content='initial-scale=1, maximum-scale=1, user-scalable=no' />
          
-         <script src="https://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+         <script src="https://npmcdn.com/leaflet@0.7.7/dist/leaflet.js"></script>
          <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js'></script>
          
-         <link rel="stylesheet" href="https://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+        
+         <link rel="stylesheet" href="https://npmcdn.com/leaflet@0.7.7/dist/leaflet.css" />
          <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato" />
          <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
          <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
@@ -72,7 +73,7 @@
             map = L.map(targetDiv, options);
             
             // Our tile layer
-            var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, INTERMAP, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), ESRI (Thailand), TomTom, 2012'});
+            var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, INTERMAP, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), ESRI (Thailand), TomTom, 2012'});
             map.addLayer(tiles);
             
             // Our Farmers Markets
