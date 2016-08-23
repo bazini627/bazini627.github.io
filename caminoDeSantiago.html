@@ -3,7 +3,7 @@
       
       <head>
          <meta charset=utf-8 />
-         <title>Our Camino de Santiago</title>
+         <title>Matt & Jakki's Camino de Santiago</title>
          <meta name='viewport' content='initial-scale=1, maximum-scale=1, user-scalable=no' />
          
          <script src="https://npmcdn.com/leaflet@0.7.7/dist/leaflet.js"></script>
@@ -46,7 +46,7 @@
       
       <body>
          <header>
-            <h1>Our Camino de Santiago</h1>
+            <h1>Matt & Jakki's Camino de Santiago</h1>
          </header>
          
          <div id='map'></div>
@@ -72,14 +72,14 @@
             var tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, INTERMAP, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), ESRI (Thailand), TomTom, 2012'});
             map.addLayer(tiles);
             
-            // Our Farmers Markets
+            // Our Camino Stops
             var caminoStops = ['Saint-Jean-Pied-de-Port', 'Roncessvalles', 'Zubiri', 'Pomplona', 'Puente la Reina', 'Estella', 'Torres del Rio', 'Logrono', 'Burgos',
                                'Mansilla de las Mulas', 'Leon', 'Villadangos del Paramo', 'Santibanez de Valdeiglesias', 'Astorga', 'Santa Catalina de Somoza', 'Rabanal del Camino',
                                'Ponferrada', 'Villafranca del Bierzo', 'Las Herrerias', 'Fillobal', 'Sarria', 'Portomarín', 'Palas de Rei', 'Arzúa', 'O Pedrouzo',
                                'Santiago de Compostela'
                                ];
             
-            // Our Coordinates for our Farmers Markets
+            // Coordinates for our Camino stops
             var caminoStopsCoords = [
                [43.163141, -1.238110],
                [43.009177, -1.319510],
@@ -109,6 +109,10 @@
                [42.878213, -8.544844],
             ];
             
+            // Places we stayed
+            var placesWeStayed = ['Amis du Chemin de Saint-Jacques','Albergue de Peregrinos de Orreaga', 'Albergue Municipal', 'Jesus y Maria', 'Jakue', 'Albergue de Peregrinos de Estella',
+                                  'Casa Mariela', 'Albergue Municipal', 'Casa de Los Cubos']
+            
             // Hiker Icon
             var hiker = L.icon({
                iconUrl: 'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fimages.clipartpanda.com%2Fhike-clipart-hiking-hi.png&f=1',
@@ -119,11 +123,16 @@
             // Loop through our arrays and clustering/plot points
             for (var i = 0; i < caminoStops.length; i++) {
               
-               var popup = "<b>"+caminoStops[i]+"</b><br>";
+               var popup = "<b>" + caminoStops[i] + "</b><br>" + "<b>Place stayed: </b>" + placesWeStayed[i];
                
                L.marker(caminoStopsCoords[i], {icon: hiker}).addTo(map).bindPopup(popup);
-               //L.polyline(caminoStopsCoords[i]).addTo(map);
             }
+             L.polyline(caminoStopsCoords, {
+               color: 'red',
+               width: 2,
+               smoothFactor: 1,
+               })
+             .addTo(map);
          </script>
       </body>
    </html>
