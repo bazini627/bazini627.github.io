@@ -118,7 +118,7 @@
             
             // Hiker Icon
             var hiker = L.icon({
-               iconUrl: 'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fimages.clipartpanda.com%2Fhike-clipart-hiking-hi.png&f=1',
+               iconUrl: 'images/hiker.png',
                
                iconSize: [20, 20],
             })
@@ -126,7 +126,7 @@
             // Loop through our arrays and clustering/plot points
             for (var i = 0; i < caminoStops.length; i++) {
               
-               var popup = "<b>" + caminoStops[i] + "</b><br>" + "<b>Place stayed: </b>" + placesWeStayed[i];
+               var popup = "<b>City/Town: </b>" + caminoStops[i] + "</b><br>" + "<b>Place stayed: </b>" + placesWeStayed[i];
                
                L.marker(caminoStopsCoords[i], {icon: hiker}).addTo(map).bindPopup(popup);
             }
