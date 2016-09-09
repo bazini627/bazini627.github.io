@@ -105,6 +105,7 @@
 
     <!-- Adding link to the geojson -->
     <script src="eoc.geojson"></script>
+    <script src="cc_citylimits.geojson"></script>
     <script>
         
       // Instantiating our map object
@@ -123,19 +124,46 @@
       
       tiles.addTo(map);
       
-      // Move zoome control to the top right
+      // Move zoom control to the top right
       L.control.zoom({
          position:'topright'
          }).addTo(map);
       
-      // Work with geojson file
-      L.geoJson(eoc, {
+      // Work with geojson of cities, switch takes a value (city name in our geojson) and checks it against value we have for case
+      var cityLayer = L.geoJson(cities, {
+         style: function(feature) {
+            switch (feature.properties.name) {
+            case 'Antioch': return {color: '#7a4330', weight: 2};
+            case 'Brentwood': return {color: '#5ec65f', weight: 2};
+            case 'Clayton': return {color: '#7546cd', weight: 2};
+            case 'Concord': return {color: '#422a3b', weight: 2};
+            case 'Danville': return {color: '#d6c542', weight: 2};
+            case 'El Cerrito': return {color: '#6acea9', weight: 2};
+            case 'Hercules': return {color: '#c74970', weight: 2};
+            case 'Lafayette': return {color: '#556d2f', weight: 2};
+            case 'Martinez': return {color: '#cb52bf', weight: 2};
+            case 'Moraga': return {color: '#c7863d', weight: 2};
+            case 'Oakley': return {color: '#6a7cc7', weight: 2};
+            case 'Orinda': return {color: '#d44c33', weight: 2};
+            case 'Pinole': return {color: '#c895bc', weight: 2};
+            case 'Pittsburg': return {color: '#476763', weight: 2};
+            case 'Pleasant Hill': return {color: '#bbd083', weight: 2};
+            case 'Richmond': return {color: '#9ade41', weight: 2};
+            case 'San Pablo': return {color: '#562d73', weight: 2};
+            case 'San Ramon': return {color: '#83bfd1', weight: 2};
+            case 'Walnut Creek': return {color: '#caae94', weight: 2};
+            }
+         },
+      }).addTo(map);
+      
+      // Work with geojson of EOC subcontractors
+      var eocLayer = L.geoJson(eoc, {
           pointToLayer: function(feature,latlng) {
               return L.circleMarker(latlng, {
+                 color: 'blue',
                  weight: 1,
-                 fillColor: 'blue',
                  fillOpacity: .8,
-                 radius: 6
+                 radius: 4 
               });   
           },
           
