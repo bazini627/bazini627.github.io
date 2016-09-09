@@ -128,11 +128,10 @@
       L.geoJson(eoc, {
           pointToLayer: function(feature,latlng) {
               return L.circleMarker(latlng, {
-                 color: 'green',
                  weight: 1,
                  fillColor: 'blue',
-                 fillOpacity: .8, // Change opacity to help with overlapping
-                 radius: 6 // Gives us proportional symbols
+                 fillOpacity: .8,
+                 radius: 6
               });   
           },
           
@@ -142,7 +141,7 @@
                   layer.setStyle({
                       fillColor: 'yellow'
                   });
-                  var popup = "<img class= 'image' src= '"+feature.properties.image+"'>" + "<br>" + "<b>Non-Profit Name: </b>" + feature.properties.nonprofit_name + "<br>" + "<b>Address: </b>" + feature.properties.address + "<br>" + "<b>Mission: </b>" + feature.properties.mission;
+                  var popup = "<img class= 'image' src= '"+feature.properties.image+"'>" + "<br>" + "<b>Non-Profit: </b>" + feature.properties.nonprofit_name + "<br>" + "<b>Address: </b>" + feature.properties.address + "<br>" + "<b>Mission: </b>" + feature.properties.mission;
                   layer.bindPopup(popup);
               });
               layer.on('mouseout', function() {
