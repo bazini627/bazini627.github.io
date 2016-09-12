@@ -72,14 +72,15 @@
         .legend {
             text-align: left;
             line-height: 18px;
-            color: #555;
+            background-color: white;
+            color: black;
         }
         .legend i {
             width: 18px;
             height: 18px;
             float: left;
             margin-right: 8px;
-            opacity: 0.7;
+            opacity: 0.9;
         }
 
     </style>
@@ -146,27 +147,32 @@
       var cityLayer = L.geoJson(cities, {
          style: function(feature) {
             switch (feature.properties.name) {
-            case 'Antioch': return {color: '#7a4330', weight: 2};
-            case 'Brentwood': return {color: '#5ec65f', weight: 2};
-            case 'Clayton': return {color: '#7546cd', weight: 2};
-            case 'Concord': return {color: '#877883', weight: 2};
-            case 'Danville': return {color: '#d6c542', weight: 2};
-            case 'El Cerrito': return {color: '#6acea9', weight: 2};
-            case 'Hercules': return {color: '#c74970', weight: 2};
-            case 'Lafayette': return {color: '#556d2f', weight: 2};
-            case 'Martinez': return {color: '#cb52bf', weight: 2};
-            case 'Moraga': return {color: '#c7863d', weight: 2};
-            case 'Oakley': return {color: '#6a7cc7', weight: 2};
-            case 'Orinda': return {color: '#d44c33', weight: 2};
-            case 'Pinole': return {color: '#c895bc', weight: 2};
-            case 'Pittsburg': return {color: '#476763', weight: 2};
-            case 'Pleasant Hill': return {color: '#bbd083', weight: 2};
-            case 'Richmond': return {color: '#9ade41', weight: 2};
-            case 'San Pablo': return {color: '#886c9d', weight: 2};
-            case 'San Ramon': return {color: '#83bfd1', weight: 2};
-            case 'Walnut Creek': return {color: '#caae94', weight: 2};
+            case 'Antioch': return {color: '#ffb4a0', weight: 2};
+            case 'Brentwood': return {color: '#e23929', weight: 2};
+            case 'Clayton': return {color: '#9d9f00', weight: 2};
+            case 'Concord': return {color: '#ff8b92', weight: 2};
+            case 'Danville': return {color: '#5c5314', weight: 2};
+            case 'El Cerrito': return {color: '#255e36', weight: 2};
+            case 'Hercules': return {color: '#b80029', weight: 2};
+            case 'Lafayette': return {color: '#f7319f', weight: 2};
+            case 'Martinez': return {color: '#a35900', weight: 2};
+            case 'Moraga': return {color: '#91bc00', weight: 2};
+            case 'Oakley': return {color: '#9a2348', weight: 2};
+            case 'Orinda': return {color: '#9c0f70', weight: 2};
+            case 'Pinole': return {color: '#008c50', weight: 2};
+            case 'Pittsburg': return {color: '#ff6297', weight: 2};
+            case 'Pleasant Hill': return {color: '#6d68f2', weight: 2};
+            case 'Richmond': return {color: '#a55f6a', weight: 2};
+            case 'San Pablo': return {color: '#a7d46f', weight: 2};
+            case 'San Ramon': return {color: '#eeaacb', weight: 2};
+            case 'Walnut Creek': return {color: '#ff823b', weight: 2};
             }
          },
+         
+         onEachFeature : function(feature, layer) {
+             var popUp = "<b>" + feature.properties.name;
+             layer.bindPopup(popUp);
+         }
       }).addTo(map);
       
       // Work with geojson of EOC subcontractors
@@ -199,25 +205,25 @@
         
       function cityColors(d) {
           switch (d) {
-              case 'Antioch': return '#7a4330';
-              case 'Brentwood': return '#5ec65f';
-              case 'Clayton': return '#7546cd';
-              case 'Concord': return '#877883';
-              case 'Danville': return '#d6c542';
-              case 'El Cerrito': return '#6acea9';
-              case 'Hercules': return '#c74970';
-              case 'Lafayette': return '#556d2f';
-              case 'Martinez': return '#cb52bf';
-              case 'Moraga': return '#c7863d';
-              case 'Oakley': return '#6a7cc7';
-              case 'Orinda': return '#d44c33';
-              case 'Pinole': return '#c895bc';
-              case 'Pittsburg': return '#476763';
-              case 'Pleasant Hill': return '#bbd083';
-              case 'Richmond': return '#9ade41';
-              case 'San Pablo': return '#886c9d';
-              case 'San Ramon': return '#83bfd1';
-              case 'Walnut Creek': return '#caae94';
+              case 'Antioch': return '#ffb4a0';
+            case 'Brentwood': return '#e23929';
+            case 'Clayton': return '#9d9f00';
+            case 'Concord': return '#ff8b92';
+            case 'Danville': return '#5c5314';
+            case 'El Cerrito': return '#255e36';
+            case 'Hercules': return '#b80029';
+            case 'Lafayette': return '#f7319f';
+            case 'Martinez': return '#a35900';
+            case 'Moraga': return '#91bc00';
+            case 'Oakley': return '#9a2348';
+            case 'Orinda': return '#9c0f70';
+            case 'Pinole': return '#008c50';
+            case 'Pittsburg': return '#ff6297';
+            case 'Pleasant Hill': return '#6d68f2';
+            case 'Richmond': return '#a55f6a';
+            case 'San Pablo': return '#a7d46f';
+            case 'San Ramon': return '#eeaacb';
+            case 'Walnut Creek': return '#ff823b';
           }
       };
         
