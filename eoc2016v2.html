@@ -72,8 +72,7 @@
         .legend {
             text-align: left;
             line-height: 18px;
-            background-color: white;
-            color: black;
+            color: yellow;
         }
         .legend i {
             width: 18px;
@@ -169,10 +168,11 @@
             }
          },
          
+         /*Comment out popup for now
          onEachFeature : function(feature, layer) {
              var popUp = "<b>" + feature.properties.name;
              layer.bindPopup(popUp);
-         }
+         }*/
       }).addTo(map);
       
       // Work with geojson of EOC subcontractors
