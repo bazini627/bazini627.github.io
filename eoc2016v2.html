@@ -203,6 +203,7 @@
           }
       }).addTo(map);
         
+      // Will use to color cities in the legend
       function cityColors(d) {
           switch (d) {
               case 'Antioch': return '#ffb4a0';
@@ -227,6 +228,7 @@
           }
       };
         
+      // Postion legend in the bottom right of map
       var legend = L.control( {position: 'bottomright'} );
         
       legend.onAdd = function(map) {
@@ -234,6 +236,7 @@
               cities = ['Antioch', 'Brentwood', 'Clayton', 'Concord', 'Danville', 'El Cerrito', 'Hercules', 'Lafayette', 'Martinez', 'Moraga', 'Oakley', 'Orinda', 'Pinole', 'Pittsburg',
                        'Pleasant Hill', 'Richmond', 'San Pablo', 'San Ramon', 'Walnut Creek'];
           
+          // Loop through and build legend with what amounts to an if/else(?:)
           for (var i = 0; i < cities.length; i++) {
               legendDiv.innerHTML +=
                   '<i style="background:' + cityColors(cities[i]) + '"></i> ' + (cities[i] ? cities[i] + '<br>' : '+');
