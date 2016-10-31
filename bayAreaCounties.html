@@ -123,6 +123,13 @@
         // Creating a map object and passing it our options variable declared above
 		var map = L.map('map', options);
 		var dataLayer; // declare global variable for map units
+        
+        // load map tiles and add to map
+        var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
 			
 		
         // Load our geoJson with jQuery
