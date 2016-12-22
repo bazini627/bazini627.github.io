@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Poverty In Contra Costa County School Districts 2010 - 2015</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- latest version of CARTO.js -->
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+  <!-- latest version of simple statistics -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
+
+  <!-- style sheet for CARTO.js -->
+  <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <!-- style sheet for google fonts -->
+  <link href='//fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: whitesmoke;
+    font-family: Lato, sans-serif;
+    color: #0D0000;
+  }
+  header {
+    padding: 6px 10%;
+  }
+  h1 {
+    position: absolute; /* Postion relative to parent element (body) */
+    z-index: 650; /* Ensures element will be higher in stacking order */
+    top: 10px; /* Postion relative to top */
+    right: 15px; /* Position relative to left */
+    padding: 8px 15px;
+    margin: 0;
+    color: whitesmoke;
+    font-size: 1.5em;
+    background: rgba(25,25,25,0.8);
+    border-radius: 5px
+    }
+    #map {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      bottom: 0;
+    }
+    .legend {
+      padding: 6px 8px;
+      font-size: 1em;
+      background: rgba(255, 255, 255,0.8);
+      color: #3d3d3d;
+      box-shadow: 0 0 15px rgba(0,0,0,2);
+      border: 1px solid;
+      border-radius: 5px;
+      width: 200px;
+	    top: 60px;
+    }
+    .legend h3 {
+      font-size: 1.1em;
+      font-weight: bold;
+      line-height: 1em;
+      margin: 0;
+    }
+    .legend span {
+      width: 20px;
+      height: 20px;
+      float: left;
+      margin: 0 10px 4px 0;
+    }
+    .legend label:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+    #ui-control {
+      width: 176px;
+      padding: 8px 25px 8px 15px;
+      background: rgba(75,75,75,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,2);
+      border-radius: 5px;
+      color: whitesmoke;
+    }
+    #ui-control .min {
+      float: left;
+    }
+    #ui-control .max {
+      float: right;
+      margin-right: -15px;
+    }
+    .year-slider {
+      width: 100%;
+    }
+    .label {
+        font-size: 1.1em;
+        font-weight: bold;
+    }
+
+    </style>
+
+</head>
+<body>
+
+  <h1>Poverty In Contra Costa County School Districts 2010 - 2015</h1>
+
+  <div id='map'></div>
+
+  <div id="ui-control">
+      <label><span class="min">2010</span><span class="max">2015</span>
+          <input type="range" min="2010", max="2015",
+                 value= "2010", step="1", class="year-slider">
+      </label>
+  </div>
+
+  <script>
+
+  // Object to hold our map options
+  var options = {
+    center: [37.9200, -121.99],
+    zoom: 10,
+    minZoom: 10,
+    maxZoom: 10,
+    zoomControl: false,
+  },
+  currentYear = '2010';
+  map = L.map('map', options); // Create map object and pass it our options object from above
+
+  // load map tiles and add to map
+  var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Use jquery to get geosjos from CARTO
+  $.getJSON("https://mjbmaps.carto.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM mjbmaps.ccsd_poverty_2010_2015 where lograde = 'KG'", function(data) {
+    dataLayer = L.geoJson(data, {
+      style: function(feature) {
+        return {
+          color: 'grey',
+          weight: 2,
+          fillOpacity: 1,
+          fillColor: '#1f78b4'
+        };
+      }
+    }).addTo(map);
+    drawMap();
+    createSliderUI();
+  });
+
+  // Function to draw our map
+  function drawMap() {
+
+    var breaks = getClassBreaks();
+
+    // Loop through our layer and set style
+    dataLayer.eachLayer(function(layer) {
+      layer.setStyle({
+        fillColor: getColor(layer.feature.properties['_' + currentYear + 'pr5to17'], breaks)
+      });
+
+      layer.on('mouseover', function() {
+        // Pass 'this'(layer/district moused over) to highlightFeature
+        highlightFeature(this);
+      })
+      layer.on('mouseout', function() {
+        unHighlightFeature(this);
+      })
+      var popup = "<b>" + layer.feature.properties.name + " County</b>" + "<br>" + "<b>" + currentYear +" Poverty Rate:</b> " + layer.feature.properties['_' + currentYear + 'pr5to17'].toFixed(2).toLocaleString() + "%";
+      layer.bindPopup(popup);
+    });
+    //drawLegend(breaks);
+  }
+
+  // Function to create class breaks for our cholorpleth
+  function getClassBreaks() {
+
+    // Empty array for current year poverty values
+    var values = [];
+
+    dataLayer.eachLayer(function(layer) {
+      var value = (layer.feature.properties['_' + currentYear + 'pr5to17']).toFixed(2).toLocaleString();
+      // Push the value for each year onto the values array
+      values.push(Number(value));
+    });
+    console.log(values);
+
+    var breaks = ss.quantile(values, [0, 0.2, 0.4, 0.6, 0.8, 1]);
+    console.log(breaks);
+    return breaks;
+  }
+
+  // Function to set up the color for our breaks
+  function getColor(d, breaks) {
+    return d <= breaks[0] ? '#f1eef6':
+           d <= breaks[1] ? '#d0d1e6':
+           d <= breaks[2] ? '#a6bddb':
+           d <= breaks[3] ? '#74a9cf':
+           d <= breaks[4] ? '#2b8cbe':
+                            '#045a8d'
+  }
+
+  // Function to draw the legend
+  function drawLegend(breaks) {
+    // Leaflet control object for our legend
+    var mapLegend = L.control( {position: 'topright'} );
+    // Anonymous function to create html elements for legend
+    mapLegend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'legend');
+      return div;
+    };
+    mapLegend.addTo(map);
+    // Title for our legend
+    var html = "<h3><span>2015</span> Poverty Rate</h3><br>";
+    // Select legend with jQuery
+    var legend = $('.legend').html(html);
+    // Loop through our breaks array
+    for (var i = 0; i < breaks.length - 1; i++) {
+      // Get the color for each break point
+      var color = getColor(breaks[i + 1], breaks);
+      legend.append('<span style="background:' + color + '"></span>' + '<label>' + breaks[i] + ' &mdash; ' + breaks[i + 1] + "%" + '</label>');
+    }
+  }
+
+  // Function to highlight county to be used with a mouseover
+  function highlightFeature(layer) {
+    layer.setStyle({
+      weight: 3,
+      color: 'yellow',
+      fillOpacity: 1
+    });
+    layer.bringToFront();
+  }
+  // Function to unhighlight our highlighted county
+  function unHighlightFeature(layer) {
+    layer.setStyle({
+      weight: 2,
+      color: 'grey',
+    });
+  }
+
+  // function to create the UI
+  function createSliderUI(breaks) {
+      // create a Leaflet control object and store a reference to it in a variable
+      var sliderControl = L.control({ position: 'bottomleft'} );
+      // when we add this control object to the map
+      sliderControl.onAdd = function(map) {
+          // select an existing DOM element with an id of "ui-control"
+          var slider = L.DomUtil.get("ui-control");
+          // when the user clicks on the slider element
+          L.DomEvent.addListener(slider, 'mousedown', function(e) {
+              // prevent the click event from bubbling up to the map
+              L.DomEvent.stopPropagation(e);
+          });
+          // return the slider from the onAdd method
+          return slider;
+      }
+      // add the control object containing our slider element to the map
+      sliderControl.addTo(map);
+      // select the year slider with jQuery
+      $('.year-slider')
+          // attach an event listener
+          .on("input change", function() {
+              // jqury val method gives us the current value of the value attribute
+              currentYear = $(this).val();
+              console.log(currentYear);
+              drawMap(breaks, currentYear);
+              $('.legend h3 span').html(currentYear);
+              $('.leaflet-popup-content').html();
+          });
+  }
+
+  </script>
+
+</body>
+</html>
