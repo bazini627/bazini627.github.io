@@ -38,6 +38,21 @@
     background: rgba(25,25,25,0.8);
     border-radius: 5px
     }
+    h2 {
+      position: absolute; /* Postion relative to parent element (body) */
+      z-index: 650; /* Ensures element will be higher in stacking order */
+      top: 75px; /* Postion relative to top */
+      right: 15px; /* Position relative to left */
+      padding: 8px 15px;
+      margin: 0;
+      color: whitesmoke;
+      font-size: 1em;
+      background: rgba(25,25,25,0.8);
+      border-radius: 5px
+    }
+    h2 a {
+      color: whitesmoke;
+    }
     #map {
       position: absolute;
       width: 100%;
@@ -53,7 +68,7 @@
       border: 1px solid;
       border-radius: 5px;
       width: 250px;
-	    top: 60px;
+	    top: 140px;
     }
     .legend h3 {
       font-size: 1.1em;
@@ -101,6 +116,7 @@
 <body>
 
   <h1>Child Poverty In Contra Costa County School Districts 2010 - 2015</h1>
+  <h2>Poverty data comes from the <a href=""http://www.census.gov/did/www/saipe/>Small Area Income & Poverty Estimates (SAIPE)</a> for School Districts, Counties, and States</h2>
 
   <div id='map'></div>
 
