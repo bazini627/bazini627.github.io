@@ -52,7 +52,7 @@
       box-shadow: 0 0 15px rgba(0,0,0,2);
       border: 1px solid;
       border-radius: 5px;
-      width: 200px;
+      width: 250px;
 	    top: 60px;
     }
     .legend h3 {
@@ -100,7 +100,7 @@
 </head>
 <body>
 
-  <h1>Poverty In Contra Costa County School Districts 2010 - 2015</h1>
+  <h1>Child Poverty In Contra Costa County School Districts 2010 - 2015</h1>
 
   <div id='map'></div>
 
@@ -136,13 +136,14 @@
     dataLayer = L.geoJson(data, {
       style: function(feature) {
         return {
-          color: 'grey',
+          color: 'black',
           weight: 2,
           fillOpacity: 1,
           fillColor: '#1f78b4'
         };
       }
     }).addTo(map);
+    drawLegend();
     drawMap();
     createSliderUI();
   });
@@ -168,7 +169,7 @@
       var popup = "<b>" + layer.feature.properties.name + " County</b>" + "<br>" + "<b>" + currentYear +" Poverty Rate:</b> " + layer.feature.properties['_' + currentYear + 'pr5to17'].toFixed(2).toLocaleString() + "%";
       layer.bindPopup(popup);
     });
-    //drawLegend(breaks);
+    updateLegend(breaks);
   }
 
   // Function to create class breaks for our cholorpleth
@@ -200,7 +201,7 @@
   }
 
   // Function to draw the legend
-  function drawLegend(breaks) {
+  function drawLegend() {
     // Leaflet control object for our legend
     var mapLegend = L.control( {position: 'topright'} );
     // Anonymous function to create html elements for legend
@@ -209,8 +210,12 @@
       return div;
     };
     mapLegend.addTo(map);
-    // Title for our legend
-    var html = "<h3><span>2015</span> Poverty Rate</h3><br>";
+  }
+
+  // Function to update the legend
+  function updateLegend(breaks) {
+
+    var html = "<h3><span>2010</span> Poverty Rate For 5 to 17 Year Olds</h3><br>";
     // Select legend with jQuery
     var legend = $('.legend').html(html);
     // Loop through our breaks array
@@ -219,6 +224,7 @@
       var color = getColor(breaks[i + 1], breaks);
       legend.append('<span style="background:' + color + '"></span>' + '<label>' + breaks[i] + ' &mdash; ' + breaks[i + 1] + "%" + '</label>');
     }
+
   }
 
   // Function to highlight county to be used with a mouseover
@@ -234,7 +240,7 @@
   function unHighlightFeature(layer) {
     layer.setStyle({
       weight: 2,
-      color: 'grey',
+      color: 'black',
     });
   }
 
