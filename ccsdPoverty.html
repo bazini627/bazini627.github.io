@@ -20,7 +20,7 @@
     margin: 0;
     padding: 0;
     background: whitesmoke;
-    font-family: Lato, sans-serif;
+    font-family: "Volkhorn";
     color: #0D0000;
   }
   header {
@@ -111,6 +111,19 @@
         font-size: 1.1em;
         font-weight: bold;
     }
+    .info {
+        padding: 6px 8px;
+        width: auto;
+        font-size: 1em;
+        background: rgba(25,25,25,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+        text-align: left;
+        color: whitesmoke;
+    }
+    .info h3 {
+        margin: 0;
+    }
 
     </style>
 
@@ -163,6 +176,7 @@
     }).addTo(map);
     drawLegend();
     drawMap();
+    drawInfo();
     createSliderUI();
   });
 
@@ -180,12 +194,23 @@
       layer.on('mouseover', function() {
         // Pass 'this'(layer/district moused over) to highlightFeature
         highlightFeature(this);
+        updateInfo(this);
       })
       layer.on('mouseout', function() {
         unHighlightFeature(this);
       })
       var popup = "<b>" + layer.feature.properties.name + " County</b>" + "<br>" + "<b>" + currentYear +" Poverty Rate:</b> " + layer.feature.properties['_' + currentYear + 'pr5to17'].toFixed(2).toLocaleString() + "%";
       layer.bindPopup(popup);
+    });
+
+    // when mousing over the map
+    dataLayer.on('mouseover', function() {
+        $(".info").show(); // display the info panel
+    });
+
+    // when mousing off the map
+    dataLayer.on('mouseout', function() {
+        $(".info").hide();  // hide the info panel
     });
     updateLegend(breaks);
   }
@@ -291,6 +316,47 @@
               $('.legend h3 span').html(currentYear);
               $('.leaflet-popup-content').html();
           });
+  }
+
+  // Function to draw infowindow
+  function drawInfo() {
+
+      // create a new Leaflet control object and position top right
+      var info = L.control({position: 'bottomright'});
+
+      // when adding control to map
+      info.onAdd = function(map) {
+
+          // create a new div with class of info
+          var div = L.DomUtil.create('div', 'info');
+
+          // return div to control object
+          return div;
+
+      }
+
+      // add the empty info div to the map
+      info.addTo(map);
+
+      // select the info panel and hide it
+      $(".info").hide();
+  }
+
+  // Function to update infowindow
+  function updateInfo(layer) {
+
+      // create shortcut for accessing properties
+      var props = layer.feature.properties;
+      // build an HTML string of relevant information about that county
+      var html = "<h3>"+ props['name'] + "</h3>";
+
+     for(var i = 2010; i <= 2015; i++) {
+       var year = String(i);
+       html+= year + ": " + props['_' + year + 'pr5to17'].toFixed(2).toLocaleString() + "%<br>"
+     }
+
+      // insert HTML content into empty info panel
+      $(".info").html(html);
   }
 
   </script>
