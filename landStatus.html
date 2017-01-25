@@ -56,23 +56,42 @@
   L.esri.basemapLayer('Gray').addTo(map);
   L.esri.basemapLayer('GrayLabels').addTo(map);
 
+  // Parks layer from ArcOnline
   var parks = L.esri.featureLayer({
           url: "https://services7.arcgis.com/R7TyJ1WBNculLJjo/arcgis/rest/services/east_bay_regional_parks/FeatureServer/0",
-          style: function () {
-            return { color: "#70ca49", weight: 2 };
-          }
+          style: style
         }).addTo(map);
 
+  // Gets the status of parks from selector      
   var parkstatus = document.getElementById('category');
 
+  // Listener for a change in selector
   category.addEventListener('change', function(){
     parks.setWhere(parkstatus.value);
   });
 
+  // Create popup on clicking on park
   parks.bindPopup(function (evt) {
     console.log(evt);
     return L.Util.template('<p><b>Park:</b> {name}<br><b>Land Status:</b> {status}</p>', evt.feature.properties);
   });
+
+  // Function to color the different park statuses
+  function getColor(d) {
+    return d == "PARKLAND"        ? '#008000' :
+                                    '#fdc086';
+  }
+
+  // Function to set the style of parks
+  function style(feature) {
+    return {
+      fillColor: getColor(feature.properties.status),
+      weight: 1,
+      opacity: 1,
+      color: 'black',
+      fillOpacity: 0.7
+    };
+  }
   </script>
 
 </body>
