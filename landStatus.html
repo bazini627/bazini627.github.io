@@ -23,6 +23,18 @@
       right:0;
       left:0;
     }
+    h1 {
+      position: absolute; /* Postion relative to parent element (body) */
+      z-index: 650; /* Ensures element will be higher in stacking order */
+      top: 10px; /* Postion relative to top */
+      left: 15px; /* Position relative to left */
+      padding: 8px 15px;
+      margin: 0;
+      color: whitesmoke;
+      font-size: 1.5em;
+      background: rgba(25,25,25,0.8);
+      border-radius: 5px
+      }
     #query {
     position: absolute;
     top: 10px;
@@ -38,6 +50,7 @@
   </style>
 </head>
 <body>
+  <h1>East Bay Parks District Land Status</h1>
   <div id="map"></div>
   <div id="query" class="leaflet-bar">
     <label>
@@ -51,8 +64,22 @@
     </label>
   </div>
   <script>
-  var map = L.map('map').setView([37.84, -121.98], 10);
+  // Options for map
+  var options = {
+    center: [37.8741, -122.10],
+    zoom: 10,
+    minZoom: 10,
+    maxZoom: 19,
+    zoomControl: false,
+  },
+  map = L.map('map',options)
 
+  // Move zoom controls to bottom left
+  L.control.zoom({
+    position:'bottomleft'
+  }).addTo(map);
+
+  // ESRI base map layers
   L.esri.basemapLayer('Gray').addTo(map);
   L.esri.basemapLayer('GrayLabels').addTo(map);
 
