@@ -68,6 +68,11 @@
   category.addEventListener('change', function(){
     parks.setWhere(parkstatus.value);
   });
+
+  parks.bindPopup(function (evt) {
+    console.log(evt);
+    return L.Util.template('<p><b>Park:</b> {name}<br><b>Land Status:</b> {status}</p>', evt.feature.properties);
+  });
   </script>
 
 </body>
