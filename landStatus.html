@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset=utf-8 />
-  <title>East Bay Parks District Land Status</title>
+  <title>East Bay Regional Park District Land Status</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
   <!-- Load Leaflet from CDN-->
@@ -10,6 +10,8 @@
 
   <!-- Load Esri Leaflet from CDN -->
   <script src="https://unpkg.com/esri-leaflet@2.0.7"></script>
+
+  <script src="https://unpkg.com/esri-leaflet-legend@2.0.0"></script>
 
   <style>
     body {
@@ -46,24 +48,52 @@
   #query select {
     font-size: 16px;
   }
-
+  .legend {
+      padding: 6px 8px;
+      font-size: 1em;
+      background: rgba(255, 255, 255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,2);
+      border-radius: 5px;
+  }
+  .legend h3 {
+      font-size: 1.5em;
+      font-weight: normal;
+      color: #001323;
+      margin: 0 0 10px 0;
+  }
+  .legend span {
+      width: 20px;
+      height: 20px;
+      float: left;
+      border: 1px solid;
+      margin: 0 10px 4px 0;
+  }
+  .legend label {
+      font-size: 1.1em;
+  }
+  .legend label:after {
+      content: '';
+      display: block;
+      clear: both;
+  }
   </style>
 </head>
 <body>
-  <h1>East Bay Parks District Land Status</h1>
+  <h1>East Bay Regional Park District Land Status</h1>
   <div id="map"></div>
   <div id="query" class="leaflet-bar">
     <label>
-      Land Status
+      Choose A Land Status Type
       <select id="category">
         <!-- make sure to encase string values in single quotes for valid sql -->
         <option value='1=1'>Any</option>
-        <option value="status='PARKLAND'">Parkland</option>
-        <option value="status='LANDBANK'">Landbank</option>
+        <option value="status='PARKLAND'">PARKLAND</option>
+        <option value="status='LANDBANK'">LANDBANK</option>
       </select>
     </label>
   </div>
   <script>
+
   // Options for map
   var options = {
     center: [37.8741, -122.10],
@@ -88,6 +118,8 @@
           url: "https://services7.arcgis.com/R7TyJ1WBNculLJjo/arcgis/rest/services/east_bay_regional_parks/FeatureServer/0",
           style: style
         }).addTo(map);
+
+  drawLegend();
 
   // Gets the status of parks from selector
   var parkstatus = document.getElementById('category');
@@ -118,6 +150,35 @@
       color: 'black',
       fillOpacity: 0.7
     };
+  }
+
+  // Function to create legend
+  function drawLegend() {
+
+      // Variable for our Leaflet Control object
+      var legend = L.control({position: 'bottomright'});
+
+
+      // Anonymous function to create html elements of legend
+      legend.onAdd = function () {
+
+          var div      = L.DomUtil.create('div', 'legend'),
+              statuses = ['PARKLAND', 'LANDBANK'];
+
+
+          div.innerHTML = "<h3>" + "Land Status" + "</h3>";
+
+          // Loop through our counties array declared above
+          for (var i = 0; i < statuses.length; i++) {
+
+              var color = getColor(statuses[i]); // variable to hold color for each county from getColor function
+
+              // Build structure of the legend
+              div.innerHTML += '<span style="background:' + color + '"></span> ' + '<label>' + statuses[i] + '</label>';
+          }
+          return div;
+      };
+      legend.addTo(map);
   }
   </script>
 
