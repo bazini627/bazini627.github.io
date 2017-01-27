@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Rent Burden In Contra Costa County Census Tracts</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- latest version of CARTO.js -->
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+  <!-- latest version of simple statistics -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
+
+  <!-- style sheet for CARTO.js -->
+  <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <!-- style sheet for google fonts -->
+  <link href='//fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: whitesmoke;
+    font-family: "Vollkorn";
+    color: #0D0000;
+  }
+  header {
+    padding:6px 10%;
+  }
+  #map {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+  }
+  h1 {
+    position: absolute; /* Postion relative to parent element (body) */
+    z-index: 650; /* Ensures element will be higher in stacking order */
+    top: 10px; /* Postion relative to top */
+    left: 15px; /* Position relative to left */
+    padding: 8px 15px;
+    margin: 0;
+    color: whitesmoke;
+    font-size: 1.5em;
+    background: gray;
+    border-radius: 5px
+  }
+  h2 {
+    position: absolute; /* Postion relative to parent element (body) */
+    z-index: 650; /* Ensures element will be higher in stacking order */
+    top: 75px; /* Postion relative to top */
+    left: 15px; /* Position relative to left */
+    padding: 8px 15px;
+    margin: 0;
+    color: whitesmoke;
+    font-size: 1em;
+    background: gray;
+    border-radius: 5px
+  }
+  h2 a {
+    color: whitesmoke;
+    text-decoration: none;
+  }
+  h2 a:hover {
+    color: blue;
+  }
+  .legend {
+    padding: 6px 8px;
+    font-size: 1em;
+    background: rgba(255, 255, 255,0.8);
+    color: #3d3d3d;
+    box-shadow: 0 0 15px rgba(0,0,0,2);
+    border: 1px solid;
+    border-radius: 5px;
+    width: 200px;
+  }
+  .legend h3 {
+    font-size: 1.1em;
+    font-weight: bold;
+    line-height: 1em;
+    margin: 0;
+  }
+  .legend span {
+    width: 20px;
+    height: 20px;
+    float: left;
+    border: 1px solid;
+    margin: 0 10px 4px 0;
+  }
+  .legend label:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  </style>
+</head>
+<body>
+  <h1>Rent Burden In Contra Costa County Census Tracts 2010 - 2014</h1>
+  <h2>Data comes from the <a href="http://mtc.ca.gov/">Metropolitan Transportation Commission's </a> <a href="http://dataportal.mtc.opendata.arcgis.com/datasets/3460768c6ef54d4a9aa2bb78545082be_0">Communities of Concern 2017 </a>data set</h2>
+
+  <div id='map'></div>
+
+  <script>
+
+  // Object to hold map options
+  var options = {
+    center: [37.9200, -121.89],
+    zoom: 11,
+    minZoom: 11,
+    maxZoom: 19,
+    zoomControl: false,
+  },
+  // Create map object and pass it our options
+  map = L.map('map', options);
+
+  // Load map tiles from CARTO and add to map
+  var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | Map Authored by <a href="https://bazini627.github.io/" target="blank">Matthew Bacinskas</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Move zoom controls to bottom left
+  L.control.zoom({
+    position:'bottomleft'
+  }).addTo(map);
+
+  // Use jquery to get at GeoJSON in CARTO
+  $.getJSON("https://mjbmaps.carto.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM mjbmaps.communities_of_concern_2017", function(data) {
+    dataLayer = L.geoJson(data, {
+      style: function(feature) {
+        return {
+          color: 'black',
+          weight: 1,
+          fillOpacity: 1,
+          fillColor: '#1f78b4'
+        };
+      }
+    }).addTo(map);
+    drawMap();
+    console.log(data);
+  })
+
+  // Function to draw the map
+  function drawMap() {
+
+    // Variable to hold class breaks
+    var breaks = getClassBreaks();
+
+    // Loop through layers of GeoJSON and set style
+    dataLayer.eachLayer(function(layer) {
+      layer.setStyle({
+        fillColor: getColor(layer.feature.properties['pct_hus_re']*100, breaks)
+      });
+
+      layer.on('mouseover', function() {
+        // Pass this (tract moused over) to highlightFeature
+        highlightFeature(this);
+      })
+      layer.on('mouseout', function() {
+        unHighlightFeature(this);
+      })
+      var popup = "<b>Census Tract:</b> " + layer.feature.properties['tract'] + "<br>" + "<b>Rent Burdened: </b>" + (layer.feature.properties['pct_hus_re']*100).toFixed(2) + "%";
+      layer.bindPopup(popup);
+    })
+    drawLegend(breaks);
+  }
+
+  // Function to create class breaks for chloropleth
+  function getClassBreaks() {
+
+    // Empty array for housing burden values
+    var values = [];
+
+    dataLayer.eachLayer(function(layer){
+      var value = (layer.feature.properties['pct_hus_re']*100).toFixed(2);
+
+      // Push the value onto the values array
+      values.push(Number(value));
+    });
+    //console.log(values);
+
+    // Set the breaks with simple-statistics
+    var clusters = ss.ckmeans(values, 5);
+
+    var breaks = clusters.map(function (cluster) {
+				return [cluster[0], cluster.pop()];
+			});
+    //console.log(breaks);
+    return breaks;
+  }
+
+  // Function to set color of breaks
+    function getColor(d, breaks) {
+      if (d <= breaks[0][1]) {
+          return '#fee5d9';
+      }
+      else if (d <= breaks[1][1]) {
+        return '#fcae91';
+      }
+      else if (d <= breaks[2][1]) {
+        return '#fb6a4a';
+      }
+      else if (d <= breaks[3][1]) {
+        return '#de2d26';
+      }
+      else if (d <= breaks[4][1]) {
+        return '#a50f15';
+      }
+    }
+
+    // Function to highlight county to be used with a mouseover
+    function highlightFeature(layer) {
+      layer.setStyle({
+        weight: 3,
+        color: '#00FFFF',
+        fillOpacity: 1
+      });
+      layer.bringToFront();
+    }
+
+    // Function to unhighlight our highlighted county
+    function unHighlightFeature(layer) {
+      layer.setStyle({
+        weight: 1,
+        color: 'black',
+      });
+    }
+
+    function drawLegend(breaks) {
+
+      var legend = L.control({position: 'bottomright'});
+
+      legend.onAdd = function () {
+
+        var div = L.DomUtil.create('div', 'legend');
+
+        div.innerHTML = "<h3>Percent Rent Burdened</h3>" + "<br>";
+
+        for (var i = 0; i < breaks.length; i++) {
+
+        var color = getColor(breaks[i][0], breaks);
+
+        div.innerHTML +=
+            '<span style="background:' + color + '"></span> ' +
+            '<label>'+(breaks[i][0]).toLocaleString() + ' &mdash; ' +
+            (breaks[i][1]).toLocaleString() + '</label>';
+          }
+          return div;
+        };
+        legend.addTo(map);
+      }
+
+  </script>
+</body>
+</html>
