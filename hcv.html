@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8 />
+	<title>Housing Choice Voucher Units By Census Tract In Richmond,CA</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+	<!-- latest version of CARTO.js -->
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+  <!-- latest version of simple statistics -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
+
+	<!-- style sheet for CARTO.js -->
+  <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <!-- style sheet for google fonts -->
+  <link href='//fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background: whitesmoke;
+			font-family: "Vollkorn";
+			color: #0D0000;
+		}
+		header {
+			width: 90%;
+			margin: 10px auto 10px auto;
+		}
+		h1 {
+			display: inline-block;
+			margin-right: 20px;
+			color: #001323;
+		}
+		h2 {
+			display: inline-block;
+			color: #001323;
+		}
+		#map {
+			width: 90%;
+			height: 540px;
+			margin: 10px auto 10px auto;
+			background: whitesmoke;
+			border: 2px solid #dddedf;
+		}
+		footer {
+			padding: 6px 10%;
+			width: 80%;
+		}
+		p {
+			font-size: 1em;
+			color: #3d3d3d;
+		}
+		p a {
+			color: #3d3d3d;
+		}
+		.info {
+			padding: 6px 8px;
+			font-size: .9em;
+			background: rgba(255,255,255,0.8);
+			box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			border-radius: 5px;
+			text-align: left;
+		}
+		.info h3 {
+			margin: 0;
+		}
+		.legend {
+			padding: 6px 8px;
+			font-size: 1em;
+			background: rgba(255, 255, 255,0.8);
+		  color: #3d3d3d;
+		  box-shadow: 0 0 15px rgba(0,0,0,2);
+		  border: 1px solid;
+		  border-radius: 5px;
+		  width: 300px;
+		}
+		.legend h3 {
+		  font-size: 1.1em;
+		  font-weight: bold;
+		  line-height: 1em;
+		  margin: 0;
+		}
+		.legend span {
+		  width: 20px;
+		  height: 20px;
+		  float: left;
+		  margin: 0 10px 4px 0;
+		  display: block;
+		  margin-right: 1em;
+		}
+		.legend label:after {
+			content: '';
+			display: block;
+			clear: both;
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<h1>Housing Choice Voucher Units</h1>
+		<h2>By Census Tract In Richmond, CA</h2>
+	</header>
+
+	<div id='map'></div>
+
+	<footer>
+		<p>
+			This map shows the percentage of renter occupied units in Richmond, California that are Housing Choice Voucher (HCV) units. HCV data was downloaded from the United States Department of Housing and Urban Development's <a href="https://egis-hud.opendata.arcgis.com/datasets?q=Housing%20Choice%20Vouchers%20by%20Tract&sort_by=relevance" target="_blank">eGIS</a> website. Median household income data was downloaded from the United States Census Bureau's <a href="https://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml" target="_blank">American Fact Finder</a> website and gathered from the American Community Survey 2010-2014 5-year estimates. Median household income data, expressed in 2014 inflation adjusted dollars, were included to give a better idea about what kind of census tracts HCV units are in and can also serve as a possible guide as to how exclusionary a particular census tract may be. Hover over the census tract polygons to reveal a particular census tract's HCV percent.
+		</p>
+	</footer>
+	<script>
+
+        // Setting map to focus on Richmond
+		var options = {
+				center: [37.95, -122.32],
+				zoom: 12,
+				minZoom: 12,
+				maxZoom: 19,
+			},
+		  map = L.map('map', options); // Create map object and pass it our options object from above
+
+			// Load map tiles and add to map
+		  var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+		    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | Map Authored by <a href="https://bazini627.github.io/" target="blank">Matthew Bacinskas</a>',
+		    subdomains: 'abcd',
+		    maxZoom: 19
+		  }).addTo(map);
+
+			// Use jquery to get geosjson from CARTO
+		  $.getJSON("https://mjbmaps.carto.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM mjbmaps.richmond_hcv_census_tracts_merge", function(data) {
+		    dataLayer = L.geoJson(data, {
+		      style: function(feature) {
+		        return {
+		          color: 'black',
+		          weight: 1,
+		          fillOpacity: .1,
+		          fillColor: '#1f78b4'
+		        };
+		      }
+		    }).addTo(map);
+				drawLegend();
+				drawMap();
+				drawInfo();
+		  });
+
+			// Function to draw our map
+		  function drawMap() {
+
+				var breaks = getClassBreaks();
+
+				// Loop through our layer and set style
+		    dataLayer.eachLayer(function(layer) {
+
+					// create shortcut for accessing properties
+					var props = layer.feature.properties;
+		      layer.setStyle({
+		        fillColor: getColor(props.hcv_pct, breaks),
+						fillOpacity: .8
+		      });
+		      layer.on('mouseover', function() {
+
+						// Pass 'this'(tract moused over) to highlightFeature
+		        highlightFeature(this);
+		        updateInfo(this);
+		      })
+		      layer.on('mouseout', function() {
+		        unHighlightFeature(this);
+		      })
+		    });
+
+				// when mousing over the map
+		    dataLayer.on('mouseover', function() {
+		        $(".info").show(); // display the info panel
+		    });
+
+				// when mousing off the map
+		    dataLayer.on('mouseout', function() {
+		        $(".info").hide();  // hide the info panel
+		    });
+		    updateLegend(breaks);
+		  }
+
+		  // Function to create class breaks for chloropleth
+		  function getClassBreaks() {
+
+				// Empty array for hcv percent values
+		    var values = [];
+		    dataLayer.eachLayer(function(layer) {
+
+					// create shortcut for accessing properties
+					var props = layer.feature.properties;
+
+		      var value = props.hcv_pct;
+
+					// Push the value for tract onto the values array
+		      values.push(Number(value));
+		    });
+		    console.log(values);
+		    var breaks = ss.quantile(values, [0, 0.2, 0.4, 0.6, 0.8, 1]);
+		    console.log(breaks);
+		    return breaks;
+		  }
+
+		  // Function to set up the color for our breaks
+		  function getColor(d, breaks) {
+		    return d <= breaks[0] ? '#fee5d9':
+		           d <= breaks[1] ? '#fcbba1':
+		           d <= breaks[2] ? '#fc9272':
+		           d <= breaks[3] ? '#fb6a4a':
+		           d <= breaks[4] ? '#de2d26':
+		                            '#a50f15'
+		  }
+
+			// Function to draw the legend
+		  function drawLegend() {
+
+			  // Leaflet control object for our legend
+		    var mapLegend = L.control( {position: 'topright'} );
+
+			  // Anonymous function to create html elements for legend
+		    mapLegend.onAdd = function (map) {
+		      var div = L.DomUtil.create('div', 'legend');
+		      return div;
+		    };
+		    mapLegend.addTo(map);
+		  }
+
+		  // Function to update the legend
+		  function updateLegend(breaks) {
+
+				var html = "<h3>Percent Housing Choice Voucher Units</h3><br>";
+
+				// Select legend with jQuery
+		    var legend = $('.legend').html(html);
+
+				// Loop through our breaks array
+		    for (var i = 0; i < breaks.length - 1; i++) {
+
+					// Get the color for each break point
+		      var color = getColor(breaks[i + 1], breaks);
+		      legend.append('<span style="background:' + color + '"></span>' + '<label>' + breaks[i] + ' &mdash; ' + breaks[i + 1] + "%" + '</label>');
+		    }
+		  }
+
+		  // Function to highlight tract to be used with a mouseover
+		  function highlightFeature(layer) {
+		    layer.setStyle({
+		      weight: 2,
+		      color: 'yellow',
+		    });
+		    layer.bringToFront();
+		  }
+
+			// Function to unhighlight our highlighted tract
+		  function unHighlightFeature(layer) {
+		    layer.setStyle({
+		      weight: 1,
+		      color: 'black',
+		    });
+		  }
+
+		  // Function to draw infowindow
+		  function drawInfo() {
+
+					// create a new Leaflet control object and position top right
+		      var info = L.control({position: 'bottomright'});
+
+					// when adding control to map
+		      info.onAdd = function(map) {
+
+							// create a new div with class of info
+		          var div = L.DomUtil.create('div', 'info');
+
+							// return div to control object
+		          return div;
+		      }
+
+					// add the empty info div to the map
+		      info.addTo(map);
+
+					// select the info panel and hide it
+		      $(".info").hide();
+		  }
+
+			// Function to update infowindow
+		  function updateInfo(layer) {
+
+					// create shortcut for accessing properties
+		      var props = layer.feature.properties;
+
+		      // build an HTML string of relevant information about that county
+		      var html = "<h3><b>Census Tract:</b> "+ props.tract + "<br>" + "<b>Percent HCV Units:</b> " + props.hcv_pct + "%" + "<br>" + "<b>Median Household Income: </b>$" + props.median_household_income_2014 + "</h3>";
+		      $(".info").html(html);
+		  }
+
+			</script>
+
+</body>
+
+</html>
