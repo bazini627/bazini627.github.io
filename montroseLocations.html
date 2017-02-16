@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Montrose Locations</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+   <!-- latest version of CARTO.js -->
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+
+  <!-- style sheet for CARTO.js -->
+  <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <!-- style sheet for google fonts -->
+  <link href='//fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+  
+   <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js'></script>
+
+   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+   <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
+   <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
+
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: whitesmoke;
+        font-family: Vollkorn;
+        color: #0D0000;
+    }
+    #map {
+        position:absolute;
+        top:0;
+        bottom:0;
+        right: 0;
+        width: 67%;
+    }
+    #side-panel {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 33%;
+        background: whitesmoke;
+        overflow-y: scroll;
+        text-align: center;
+    }
+    h1 {
+        padding: 8px 25px 8px 15px;
+        margin: 0;
+        background: #b3de69;
+        color: black;
+        font-weight: 400;
+        font-size: 1.2em;
+        text-align: center;
+    }
+    h2 {
+        margin: 0;
+        padding: 8px 25px 8px 15px;
+        color: black;
+        font-weight: bold;
+        font-size: 1.2em;
+        text-align: center;
+    }
+    #side-panel p {
+        margin: auto;
+        color: #3d3d3d;
+        font-size: 1em;
+        line-height: 1.6em;
+    }
+    
+
+    </style>
+</head>
+
+<body>
+    <div id='side-panel'>
+    <h1>Montrose Environmental US Locations</h1>
+        <p>
+            <h2>AL</h2>
+            30 Monroe Drive, Pelham, AL 35124
+        </p>
+        <p>
+            <h2>AZ</h2>
+            3001 S 35th Street #2, Phoenix, AZ 85034
+        </p>
+        <p>
+            <h2>CA</h2>
+            2825 Verne Roberts Circle, Antioch, CA 94509
+            <br>
+            <br>
+            12625 Jomani Dr. Suite 103, Bakersfield, CA 93312
+            <br>
+            <br>
+            4210 Resnik Court Suite 200, Bakersfield, CA 93313
+            <br>
+            <br>
+            2323 Fifth Street, Berkeley, CA 94710
+            <br>
+            <br>
+            2840 Eigth Street, Berkeley, CA 94710
+            <br>
+            <br>
+            806 N Batavia Street, Orange, CA 92867
+            <br>
+            <br>
+            1036 W Taft Ave., Orange, CA 92865
+            <br>
+            <br>
+            1631 E. St. Andrew Place, Santa Ana, CA 92705
+            <br>
+            <br>
+            2015 Preisjer Ln. Suite C, Santa Maria, CA 93454
+            <br>
+            <br>
+            3639 Harbor Blvd Suite 203 D, Venture, CA 93003
+        </p>
+        <p>
+            <h2>CO</h2>
+            280 East 2st Ave. #621, Broomfield, CO 80038
+        </p>
+        <p>
+            <h2>DE</h2>
+            301 Harvey Drive Unit 9, Newport, DE 19804
+        </p>
+        <p>
+            <h2>FL</h2>
+            2257 Vista Parkway #25, West Palm Beach, FL 33411
+        </p>
+        <p>
+            <h2>HI</h2>
+            98.030 Hekaha Street #1, Aiea, HI 96701
+        </p>
+        <p>
+            <h2>IL</h2>
+            1711 W. Armitage Ct., Addison, IL 60101
+            <br>
+            <br>
+            951 Old Rand Road Unit 106, Wauconda, IL 60084
+        </p>
+        <p>
+            <h2>LA</h2>
+            14530 Barringer Court, Baton Rouge, LA 70809
+        </p>
+        <p>
+            <h2>MA</h2>
+            2 New Pasture Road Unit #5, Newburyport, MA 01950
+        </p>
+        <p>
+            <h2>MI</h2>
+            109 S Main St., Eaton Rapids, MI 48827
+        </p>
+        <p>
+            <h2>MT</h2>
+            2285 Deerfield Lane, Helena, MT 59601
+        </p>
+        <p>
+            <h2>NV</h2>
+            520 Edison Way, Reno, NV 89052
+        </p>
+        <p>
+            <h2>NJ</h2>
+            Wayne Plaza II Suite 109, 155 Route 46 West, Wayne, NJ 07470
+        </p>
+        <p>
+            <h2>NM</h2>
+            3500 Comanche Road NE Suit G, Albuquerque, NM 87107
+        </p>
+        <p>
+            <h2>NC</h2>
+            808 Capitola Drive Suite 1, Durham, NC 27713
+            <br>
+            <br>
+            301 Brookdale Street, Kannapolis, NC 28083
+            <br>
+            <br>
+            122 US Hwy 170 E, Hillsborough, NC 27278
+        </p>
+        <p>
+            <h2>OH</h2>
+            10060 Brecksville Road, Cleveland, OH 44141
+        </p>
+        <p>
+            <h2>OR</h2>
+            107 SE Washington Street, Portland, OR 97214
+            <br>
+            <br>
+            1385 NE Whitaker Way, Portland, OR 97230
+        </p>
+        <p>
+            <h2>PA</h2>
+            1350 Sullivan Trail Suite A, Easton, PA 18040
+            <br>
+            <br>
+            1050 William Pitt Way, Pittsburgh, PA 15238
+        </p>
+        <p>
+            <h2>TX</h2>
+            1320 Highway 3 South, League City, TX 77537
+            <br>
+            <br>
+            14050 Southton Road Ste. 300, San Antonio, TX 78223
+            <br>
+            <br>    
+            1710 Preston Road Unit C, Pasadena, TX 77503
+            <br>
+            <br>
+            3526 Loop 337 Suit 100, New Braunfels, TX 78130
+        </p>
+        <p>
+            <h2>VA</h2>
+            1470 E Parham Road, Henrico, VA 23228
+            <br>
+            <br>
+            5075 Hollins Road, Roanoake, VA 24019
+        </p>
+        <p>
+            <h2>WA</h2>
+            4150 B Place NW Suite 106, Auburn, WA 98001
+            <br>
+            <br>
+            11327 E. Montgomery Bay #1, Spokane Valley, WA 99206
+            <br>
+            <br>
+            1325 Meador Ave. Suite 101, Bellingham, WA 98229
+        </p>
+
+    </div>
+
+    <div id='map'></div>
+
+    <script>
+    var map;
+    var targetDiv = 'map';
+
+    var options = {
+        center: [37.090240, -105.512891],
+        zoom: 4
+        }
+    
+    map = L.map(targetDiv, options);
+    var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+        });
+    map.addLayer(tiles);
+    
+    // Use jquery to get at GeoJSON in CARTO
+    $.getJSON("https://mjbmaps.carto.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM mjbmaps.montroselocations", function(data) {
+    dataLayer = L.geoJson(data, {
+      style: function(feature) {
+        return {
+          color: 'yellow',
+          weight: 1,
+          fillOpacity: 1,
+          fillColor: '#1f78b4'
+        };
+      }
+    });
+    console.log(data);
+    geojsonCluster(data);
+  })
+    
+    // Function to get clusters from GeoJSON
+    function geojsonCluster(data) {
+      var markers = L.markerClusterGroup({
+        showCoverageOnHover: false});
+      
+       // Montrose Icon
+      var montroseIcon = L.icon({
+        iconUrl: '/home/mjb/Downloads/montrose-15.jpg',
+        });
+      
+      var geoJsonLayer = L.geoJson(data, {
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(feature.properties.location);
+            }
+        });
+      markers.addLayer(geoJsonLayer);
+      map.addLayer(markers);
+    }
+    
+    </script>
+    
+</body>
+</html>
