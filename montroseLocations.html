@@ -246,7 +246,6 @@
     
     // Use jquery to get at GeoJSON in CARTO
     $.getJSON("https://mjbmaps.carto.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM mjbmaps.montroselocations", function(data) {
-    dataLayer = L.geoJson(data);
     console.log(data);
     geojsonCluster(data);
   })
