@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
   <!-- style sheet for google fonts -->
   <link href='//fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
-  
+
    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js'></script>
 
    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
@@ -32,14 +32,14 @@
         top:0;
         bottom:0;
         right: 0;
-        width: 67%;
+        width: 70%;
     }
     #side-panel {
         position: absolute;
         left: 0;
         top: 0;
         bottom: 0;
-        width: 33%;
+        width: 30%;
         background: whitesmoke;
         overflow-y: scroll;
         text-align: center;
@@ -61,13 +61,6 @@
         font-size: 1.2em;
         text-align: center;
     }
-    #side-panel p {
-        margin: auto;
-        color: #3d3d3d;
-        font-size: 1em;
-        line-height: 1.6em;
-    }
-    
 
     </style>
 </head>
@@ -200,7 +193,7 @@
             <br>
             14050 Southton Road Ste. 300, San Antonio, TX 78223
             <br>
-            <br>    
+            <br>
             1710 Preston Road Unit C, Pasadena, TX 77503
             <br>
             <br>
@@ -236,30 +229,30 @@
         center: [37.090240, -105.512891],
         zoom: 4
         }
-    
+
     map = L.map(targetDiv, options);
         var tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://openstreetmap.org/copyright" target="blank">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="blank">CARTO</a>|Map Authored by <a href="https://bazini627.github.io/" target="blank">Matthew Bacinskas</a>',
             subdomains: 'abcd',
             maxZoom: 19
         }).addTo(map);
-    
+
     // Use jquery to get at GeoJSON in CARTO
     $.getJSON("https://mjbmaps.carto.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM mjbmaps.montroselocations", function(data) {
     console.log(data);
     geojsonCluster(data);
   })
-    
+
     // Function to get clusters from GeoJSON
     function geojsonCluster(data) {
       var markers = L.markerClusterGroup({
         showCoverageOnHover: false});
-      
+
        // Montrose Icon
       var montroseIcon = L.icon({
         iconUrl: '/home/mjb/Downloads/montrose-15.jpg',
         });
-      
+
       var geoJsonLayer = L.geoJson(data, {
         onEachFeature: function (feature, layer) {
             layer.bindPopup(feature.properties.location);
@@ -268,8 +261,8 @@
       markers.addLayer(geoJsonLayer);
       map.addLayer(markers);
     }
-    
+
     </script>
-    
+
 </body>
 </html>
