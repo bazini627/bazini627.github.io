@@ -91,6 +91,19 @@
     display: block;
     clear: both;
   }
+  .info {
+      padding: 6px 8px;
+      width: auto;
+      font-size: 1em;
+      background: rgba(192,192,192,0.3);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+      text-align: left;
+      color: whitesmoke;
+  }
+  .info h3 {
+      margin: 0;
+  }
   </style>
 </head>
 <body>
@@ -137,6 +150,7 @@
       }
     }).addTo(map);
     drawMap();
+    drawInfo();
     console.log(data);
   })
 
@@ -155,6 +169,8 @@
       layer.on('mouseover', function() {
         // Pass this (tract moused over) to highlightFeature
         highlightFeature(this);
+        updateInfo(this);
+        $(".info").show(); // display the info panel
       })
       layer.on('mouseout', function() {
         unHighlightFeature(this);
@@ -249,6 +265,35 @@
         };
         legend.addTo(map);
       }
+
+      // Function to draw infowindow
+      function drawInfo() {
+          // create a new Leaflet control object and position top right
+          var info = L.control({position: 'topright'});
+          // when adding control to map
+          info.onAdd = function(map) {
+              // create a new div with class of info
+              var div = L.DomUtil.create('div', 'info');
+              // return div to control object
+              return div;
+          }
+          // add the empty info div to the map
+          info.addTo(map);
+          // select the info panel and hide it
+          $(".info").hide();
+      }
+      // Function to update infowindow
+      function updateInfo(layer) {
+          // create shortcut for accessing properties
+          var props = layer.feature.properties;
+
+          // build an HTML string of relevant information about that county
+          var html = "<b>Census Tract:</b> " + props['tract'] + "<br>" + "<b>Severely Rent Burdened: </b>" + (props['pct_hus_re']*100).toFixed(2) + "%";
+
+          // insert HTML content into empty info panel
+          $(".info").html(html);
+      }
+
 
   </script>
 </body>
