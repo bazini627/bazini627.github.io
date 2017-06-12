@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Richmond GeoTracker Sites</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- latest version of CARTO.js -->
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+  <!-- latest version of jquery -->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+  <!-- style sheet for CARTO.js -->
+  <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <!-- style sheet for google fonts -->
+  <link href='//fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: whitesmoke;
+    font-family: 'Vollkorn';
+    color: #0D0000;
+  }
+  header {
+    padding:6px 10%;
+  }
+  #map {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+  }
+  h1 {
+    position: absolute;
+    z-index: 650;
+    top: 10px;
+    left: 15px;
+    padding: 8px 15px;
+    margin: 0;
+    color: whitesmoke;
+    font-size: 1.5em;
+    background: gray;
+    border-radius: 5px
+  }
+      h2 {
+    position: absolute;
+    z-index: 650;
+    top: 75px;
+    left: 15px;
+    padding: 8px 15px;
+    margin: 0;
+    color: whitesmoke;
+    font-size: 1em;
+    background: gray;
+    border-radius: 5px
+  }
+  h2 a {
+    color: whitesmoke;
+    text-decoration: none;
+  }
+  h2 a:hover {
+    color: blue;
+  }
+  #layer_selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 0;
+  }
+  #layer_selector ul {
+    padding: 0; margin: 0;
+    list-style-type: none;
+  }
+  #layer_selector li {
+    border-bottom: 1px solid #999;
+    padding: 15px 30px;
+    font-family: "Helvetica", Arial;
+    font-size: 13px;
+    color: #444;
+    cursor: auto;
+  }
+  #layer_selector li:hover {
+    background-color: #F0F0F0;
+    cursor: pointer;
+  }
+  #layer_selector li.selected {
+    background-color: #EEE;
+  }
+  .legend {
+    padding: 6px 8px;
+    font-family: "Vollkorn";
+    font-size: 1em;
+    background: rgba(255, 255, 255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,2);
+    border-radius: 5px;
+  }
+  .legend h3 {
+    font-size: 1.1em;
+    font-weight: normal;
+    color: #001323;
+    margin: 0 0 10px 0;
+   }
+   .legend span {
+     width: 20px;
+     height: 20px;
+     float: left;
+     border: 1px solid;
+     margin: 0 10px 4px 0;
+   }
+   .legend label {
+     font-size: 1.1em;
+   }
+   .legend label:after {
+     content: '';
+     display: block;
+     clear: both;
+   }
+   .cartodb-logo {
+     display:none!important;
+   }
+   </style>
+</head>
+<body>
+  <h1>Current and Former Cleanup Sites In Richmond, CA</h1>
+  <h2>Data comes from the State of California's <a href="http://geotracker.waterboards.ca.gov/" target="_blank">GeoTracker</a> website</h2>
+
+<div id="layer_selector" class="cartodb-infobox">
+  <ul>
+    <li data="all" class="selected">All Sites</li>
+    <li data="LUST CLEANUP SITE">LUST</li>
+    <li data="CLEANUP PROGRAM SITE">Cleanup Program</li>
+    <li data="MILITARY UST SITE">Military UST</li>
+    <li data="MILITARY CLEANUP SITE">Military Cleanup</li>
+    <li data="MILITARY PRIVATIZED SITE">Military Privatized</li>
+  </ul>
+</div>
+
+  <div id='map'></div>
+
+  <script type="cartocss/html" id="site-styles">
+  #geotracker_sites {
+    marker-fill-opacity: 0.9;
+    marker-line-color: #000000;
+    marker-line-width: .5;
+    marker-line-opacity: 1;
+    marker-placement: point;
+    marker-type: ellipse;
+    marker-width: 7;
+    marker-allow-overlap: true;
+    [zoom > 12]{
+      marker-width: 9;
+    }
+  }
+  #geotracker_sites[site_type="LUST CLEANUP SITE"] {
+    marker-fill: #8dd3c7;
+  }
+  #geotracker_sites[site_type="CLEANUP PROGRAM SITE"] {
+    marker-fill: #ffffb3;
+  }
+  #geotracker_sites[site_type="MILITARY UST SITE"] {
+    marker-fill: #bebada;
+  }
+  #geotracker_sites[site_type="MILITARY CLEANUP SITE"] {
+    marker-fill: #fb8072;
+  }
+  #geotracker_sites[site_type="MILITARY PRIVATIZED SITE"] {
+    marker-fill: #80b1d3;
+  }
+   </script>
+
+   <script>
+
+   // Object to hold map options
+   var options = {
+     center: [37.949874, -122.348557], // Portrero and S.22nd
+     zoom: 12,
+     minZoom: 12,
+     maxZoom: 19,
+     zoomControl: false,
+   },
+   // Create map object and pass it our options
+   map = L.map('map', options);
+
+   // Load map tiles from CARTO and add to map
+   var tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | Map Authored by <a href="https://bazini627.github.io/" target="blank">Matthew Bacinskas</a>',
+     subdomains: 'abcd',
+     maxZoom: 19
+   }).addTo(map);
+
+   // Move zoom controls to bottom left
+   L.control.zoom({
+     position:'bottomright'
+   }).addTo(map);
+
+   var layerSource = {
+        https: true,
+        user_name: 'mjbmaps',
+        type: 'cartodb',
+        sublayers: [{
+        sql: "SELECT * FROM mjbmaps.geotrackerrichmond_copy",
+        cartocss: $("#site-styles").text()
+      }]
+    }
+
+    var sublayers = [];
+
+    cartodb.createLayer(map, layerSource)
+           .addTo(map)
+           .done(function(layer) {
+               for (var i = 0; i < layer.getSubLayerCount(); i++) {
+                  sublayers[i] = layer.getSubLayer(i);
+                  cartodb.vis.Vis.addInfowindow(map, sublayers[i], ['site_name','address','site_type','status']);
+                  createSelector(sublayers[i]);
+               }
+           })
+           .error(function(err) {
+               console.log("An error occurred: " + err);
+           });
+           drawLegend();
+
+   // Function to get color for site types
+   function getColor(d) {
+     return d == "LUST CLEANUP SITE"     ? '#8dd3c7' :
+            d == "CLEANUP PROGRAM SITE"  ? '#ffffb3' :
+            d == "MILITARY UST SITE"     ? '#bebada' :
+            d == "MILITARY CLEANUP SITE" ? '#fb8072' :
+                                           '#80b1d3';
+   }
+
+   // Function to create legend
+   function drawLegend() {
+      // Variable for our Leaflet Control object
+      var legend = L.control({position: 'bottomleft'});
+
+      // Anonymous function to create html elements of our legend
+      legend.onAdd = function () {
+         var div      = L.DomUtil.create('div', 'legend'),
+         siteTypes     = ['LUST CLEANUP SITE', 'CLEANUP PROGRAM SITE', 'MILITARY UST SITE', 'MILITARY CLEANUP SITE','MILITARY PRIVATIZED SITE'];
+         div.innerHTML = "<h3>" + "Cleanup Site Types" + "</h3>";
+
+         // Loop through our site types array declared above
+         for (var i = 0; i < siteTypes.length; i++) {
+           var color = getColor(siteTypes[i]); // variable to hold color for each site type from getColor function
+
+           // Build structure of the legend
+           div.innerHTML += '<span style="background:' + color + '"></span> ' + '<label>' + siteTypes[i] + '</label>';
+         }
+         return div;
+       };
+       legend.addTo(map);
+     }
+
+     // create layer selector
+     function createSelector(layer) {
+       var sql = new cartodb.SQL({ user: 'documentation' });
+       var $options = $('#layer_selector li');
+       $options.click(function(e) {
+         // get the siteType of selection
+         var $li = $(e.target);
+         var siteType = $li.attr('data');
+         // deselect all and select the clicked one
+         $options.removeClass('selected');
+         $li.addClass('selected');
+         // create query based on data from the layer
+         var query = "select * FROM mjbmaps.geotrackerrichmond_copy";
+         if(siteType !== 'all') {
+           query = "SELECT * FROM mjbmaps.geotrackerrichmond_copy where site_type = '" + siteType + "'";
+           console.log(query)
+         }
+         // change the query in the layer to update the map
+         layer.setSQL(query);
+       });
+     }
+  </script>
+</body>
+</html>
