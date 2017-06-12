@@ -196,7 +196,6 @@
    }).addTo(map);
 
    var layerSource = {
-        https: true,
         user_name: 'mjbmaps',
         type: 'cartodb',
         sublayers: [{
@@ -207,7 +206,7 @@
 
     var sublayers = [];
 
-    cartodb.createLayer(map, layerSource)
+    cartodb.createLayer(map, layerSource, { https: true })
            .addTo(map)
            .done(function(layer) {
                for (var i = 0; i < layer.getSubLayerCount(); i++) {
