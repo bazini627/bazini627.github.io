@@ -313,7 +313,7 @@
           .on("input change", function() {
               // jqury val method gives us the current value of the value attribute
               currentYear = $(this).val();
-              console.log(currentYear);
+              //console.log(currentYear);
               drawMap(breaks, currentYear);
               $('.legend h3 span').html(currentYear);
               $('.leaflet-popup-content').html();
