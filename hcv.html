@@ -122,12 +122,12 @@
 			},
 		  map = L.map('map', options); // Create map object and pass it our options object from above
 
-			// Load map tiles and add to map
-		  var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-		    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | Map Authored by <a href="https://bazini627.github.io/" target="blank">Matthew Bacinskas</a>',
-		    subdomains: 'abcd',
-		    maxZoom: 19
-		  }).addTo(map);
+		// Load map tiles from CARTO and add to map
+		var tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+    			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | Map Authored by <a href="https://bazini627.github.io/" target="blank">Matthew Bacinskas</a>',
+    			subdomains: 'abcd',
+    			maxZoom: 19
+  			}).addTo(map);
 
 			// Use jquery to get geosjson from CARTO
 		  $.getJSON("https://mjbmaps.carto.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM mjbmaps.richmond_hcv_census_tracts_merge", function(data) {
@@ -198,9 +198,9 @@
 					// Push the value for tract onto the values array
 		      values.push(Number(value));
 		    });
-		    console.log(values);
+		    //console.log(values);
 		    var breaks = ss.quantile(values, [0, 0.2, 0.4, 0.6, 0.8, 1]);
-		    console.log(breaks);
+		    //console.log(breaks);
 		    return breaks;
 		  }
 
