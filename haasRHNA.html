@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Contra Costa Housing Allocations</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- latest version of CARTO.js -->
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+  <!-- latest version of simple statistics -->
+  <script src="https://unpkg.com/simple-statistics@4.1.0/dist/simple-statistics.min.js"></script>
+
+  <!-- style sheet for CARTO.js -->
+  <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <!-- style sheet for google fonts -->
+  <link href='//fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+
+  <style>
+    body {
+      margin:0;
+      padding:0;
+      background: whitesmoke;
+      font-family: "Vollkorn";
+    }
+    #map {
+      position:absolute;
+      top:0;
+      bottom:0;
+      right: 0;
+      width: 100%;
+    }
+    h1 {
+      position: absolute;
+      z-index: 650;
+      top: 10px;
+      left: 15px;
+      padding: 8px 15px;
+      margin: 0;
+      color: whitesmoke;
+      font-size: 1.5em;
+      background: rgba(25,25,25,0.8);
+      border-radius: 5px
+    }
+    h2 {
+      position: absolute;
+      z-index: 650;
+      top: 75px;
+      left: 15px;
+      padding: 8px 15px;
+      margin: 0;
+      color: whitesmoke;
+      font-size: 1em;
+      background: rgba(25,25,25,0.8);
+      border-radius: 5px
+    }
+    h2 a {
+      color: whitesmoke;
+      text-decoration: none;
+    }
+    h2 a:hover {
+      color: blue;
+    }
+    .legend {
+      padding: 6px 8px;
+      bottom: 15px;
+      background: rgba(25,25,25,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,2);
+      border-radius: 5px;
+    }
+    .legend h3 {
+      font-size: 1.1em;
+      font-weight: normal;
+      color: whitesmoke;
+      margin: 0 0 10px 0;
+    }
+    .legend span {
+      width: 20px;
+      height: 20px;
+      float: left;
+      margin: 0 10px 4px 0;
+    }
+    .legend label {
+      font-size: 1.1em;
+      color: whitesmoke;
+    }
+    .legend label:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+    .info {
+      padding: 6px 8px;
+      width: 300px;
+      font-size: 1em;
+      background: rgba(25,25,25,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+      text-align: left;
+      color: whitesmoke;
+    }
+    .info h3 {
+      text-align: center;
+    }
+    .cartodb-logo {
+      display:none!important;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contra Costa RHNA Allocations (4th Cycle 2007 -2014)</h1>
+  <h2>RHNA data comes from the <a href="http://haasinstitute.berkeley.edu/unfairshares" target="_blank">Unfair Shares</a> report relased by Heather Bromfield and Eli Moore of the Haas Institute For A Fair and Inclusive Society</h2>
+
+  <div id='map'></div>
+
+  <script>
+
+    // Object to hold our map options
+    var options = {
+      center: [37.92, -121.99],
+      zoom: 10,
+      minZoom: 11,
+      maxZoom: 11,
+      zoomControl:false,
+    },
+    map = L.map('map', options); // Create map object and pass it our options object from above
+
+    // Load a map tile and add it to the map
+    var tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Get GeoJSON hosted on CARTO
+    $.getJSON('https://mjbmaps.carto.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM haasrhna_copy', function(data) {
+
+      dataLayer = L.geoJson(data, {
+        style: function(feature) {
+          return {
+            color: 'black',
+            weight: 1,
+            fillOpacity: 1,
+            fillColor: '#1f78b4'
+          };
+        }
+      }).addTo(map);
+
+      console.log(data);
+      updateMap(data);
+      drawInfo();
+    })
+    // Error catching with jquery fail method in case there is an issue with loading the GeoJSON
+    .fail(function() {
+      // Error message to let us know there is an issue with loading the GeoJSON
+      console.log("Unable to load your GeoJSON file");
+    });
+
+    // Function to update the map after initial drawing and to allow some interaction
+    function updateMap(data) {
+
+      var breaks = getClassBreaks();
+
+      dataLayer.eachLayer(function(layer) {
+        layer.setStyle({
+          fillColor: getColor(Number(layer.feature.properties.pct_nhw), breaks)
+        });
+
+        layer.on('mouseover', function() {
+
+          // Pass 'this'(city moused over) to highlightFeature
+          highlightFeature(this);
+          updateInfo(this);
+        })
+
+        layer.on('mouseout', function() {
+          unHighlightFeature(this);
+        })
+
+        // when mousing over the map
+        dataLayer.on('mouseover', function() {
+          $(".info").show(); // display the info panel
+        });
+
+        // when mousing off the map
+        dataLayer.on('mouseout', function() {
+          $(".info").hide();  // hide the info panel
+        });
+      })
+      drawLegend(breaks);
+    }
+
+    // Function to create class breaks for the cholorpleth
+    function getClassBreaks() {
+
+      // Empty array for percent non-hispanic white
+      var values = [];
+
+      dataLayer.eachLayer(function(layer) {
+        var value = (layer.feature.properties.pct_nhw);
+        // Push the value for each city onto the values array
+        values.push(Number(value));
+      });
+
+      //var breaks = ss.quantile(values, [0, 0.2, 0.3, 0.5,1]);
+      var breaks = ss.equalIntervalBreaks(values, 5);
+      console.log(breaks);
+      return breaks;
+    }
+
+    // function to get the color value
+        function getColor(d, breaks) {
+            return d <= breaks[0] ? '#eff3ff':
+                   d <= breaks[1] ? '#c6dbef':
+                   d <= breaks[2] ? '#9ecae1':
+                   d <= breaks[3] ? '#6baed6':
+                   d <= breaks[4] ? '#3182bd':
+                                    '#08519c';
+        }
+
+    // // Function to set color of breaks
+    // function getColor(d, breaks) {
+    //   if (d <= breaks[0][1]) {
+    //       return '#eff3ff';
+    //   }
+    //   else if (d <= breaks[1][1]) {
+    //     return '#bdd7e7';
+    //   }
+    //   else if (d <= breaks[2][1]) {
+    //     return '#6baed6';
+    //   }
+    //   else if (d <= breaks[3][1]) {
+    //     return '#3182bd';
+    //   }
+    //   else if (d <= breaks[4][1]) {
+    //     //return '#006d2c';
+    //     return '#08519c';
+    //   }
+    // }
+
+    // Function to draw the legend
+    function drawLegend(breaks) {
+
+      // Leaflet control object for legend
+      var mapLegend = L.control( {position: 'bottomleft'} );
+
+      // Anonymous function to create html elements for legend
+      mapLegend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'legend');
+        return div;
+      };
+      mapLegend.addTo(map);
+
+      // Title for our legend
+      var html = "<h3>Percentage of White Residents (2000 Census)</h3>";
+
+      // Select legend with jQuery
+      var legend = $('.legend').html(html);
+
+      // Loop through our breaks array
+      for (var i = 0; i < breaks.length - 1; i++) {
+                // Get the color for each break point
+                var color = getColor(breaks[i + 1], breaks);
+                legend.append('<span style="background:' + color + '"></span>' + '<label>' + breaks[i] + ' &mdash; ' + breaks[i + 1] + "%" + '</label>');
+      }
+    }
+
+    // Function to draw an info window
+    function drawInfo() {
+
+      // create a new Leaflet control object and position top right
+      var info = L.control({position: 'bottomright'});
+
+      // when adding control to map
+      info.onAdd = function(map) {
+
+        // create a new div with class of info
+        var div = L.DomUtil.create('div', 'info');
+
+        // return div to control object
+        return div;
+      }
+
+      // add the empty info div to the map
+      info.addTo(map);
+
+      // select the info panel and hide it
+      $(".info").hide();
+    }
+
+    // Function to update our info panel
+    function updateInfo(layer) {
+
+      var props = layer.feature.properties; // create shorthand variable instead of having to type out 'layer.feature.properties' each time we want to access a value
+
+      var html = "<h3>" + props.city + "</h3>" + "<b>Very Low Income Unit Allocation: </b>" + props.alloc_vli_4c + " units<br>" + "<b>Very Low Income Units Permitted: </b>" + props.num_permit_vli_4c + " units<br>" +
+                 "<b>Percent Very Low Income Units Permitted:</b>: " + props.pct_permit_vli_4c + "%<br><br>" + "<b>Low Income Unit Allocation: </b>" + props.alloc_li_4c + " units<br>" +
+                 "<b>Low Income Units Permitted: </b>" + props.num_permit_li_4c + " units<br>" + "<b>Percent Low Income Units Permitted:</b>: " + props.pct_permit_li_4c + "%<br><br>" +
+                 "<b>Moderate Income Unit Allocation: </b>" + props.alloc_mi_4c + " units<br>" + "<b>Moderate Income Units Permitted: </b>" + props.num_permit_mi_4c + " units<br>" +
+                 "<b>Percent Moderate Income Units Permitted:</b>: " + props.pct_permit_mi_4c + "%<br><br>" + "<b>Above Moderate Income Unit Allocation: </b>" + props.alloc_ami_4c + " units<br>" +
+                 "<b>Above Moderate Income Units Permitted: </b>" + props.num_permit_ami_4c + " units<br>" + "<b>Percent Moderate Income Units Permitted:</b>: " + props.pct_permit_ami_4c + "%";
+
+      // Use jQuery html method to populate panel
+      $(".info").html(html);
+    }
+
+    // Function to highlight city to be used with a mouseover
+    function highlightFeature(layer) {
+      layer.setStyle({
+        weight: 5,
+        color: 'yellow',
+        fillOpacity: 1
+      });
+      layer.bringToFront();
+    }
+
+    // Function to unhighlight city
+    function unHighlightFeature(layer) {
+      layer.setStyle({
+        weight: 1,
+        color: 'black',
+      });
+    }
+
+    </script>
+</body>
+</html>
