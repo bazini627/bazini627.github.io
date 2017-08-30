@@ -260,7 +260,7 @@
       for (var i = 0; i < breaks.length - 1; i++) {
                 // Get the color for each break point
                 var color = getColor(breaks[i + 1], breaks);
-                legend.append('<span style="background:' + color + '"></span>' + '<label>' + breaks[i] + ' &mdash; ' + breaks[i + 1] + "%" + '</label>');
+                legend.append('<span style="background:' + color + '"></span>' + '<label>' + breaks[i].toFixed(0).toLocaleString() + ' &mdash; ' + breaks[i + 1].toFixed(0).toLocaleString() + "%" + '</label>');
       }
     }
 
