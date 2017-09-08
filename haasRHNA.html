@@ -292,7 +292,7 @@
 
       var props = layer.feature.properties; // create shorthand variable instead of having to type out 'layer.feature.properties' each time we want to access a value
 
-      var html = "<h3>" + props.city + "</h3>" + "<b>Very Low Income Unit Allocation: </b>" + props.alloc_vli_4c + " units<br>" + "<b>Very Low Income Units Permitted: </b>" + props.num_permit_vli_4c + " units<br>" +
+      var html = "<h3>" + props.city + ": " + props.pct_nhw + "% White" + "</h3>" + "<b>Very Low Income Unit Allocation: </b>" + props.alloc_vli_4c + " units<br>" + "<b>Very Low Income Units Permitted: </b>" + props.num_permit_vli_4c + " units<br>" +
                  "<b>Percent Very Low Income Units Permitted:</b>: " + props.pct_permit_vli_4c + "%<br><br>" + "<b>Low Income Unit Allocation: </b>" + props.alloc_li_4c + " units<br>" +
                  "<b>Low Income Units Permitted: </b>" + props.num_permit_li_4c + " units<br>" + "<b>Percent Low Income Units Permitted:</b>: " + props.pct_permit_li_4c + "%<br><br>" +
                  "<b>Moderate Income Unit Allocation: </b>" + props.alloc_mi_4c + " units<br>" + "<b>Moderate Income Units Permitted: </b>" + props.num_permit_mi_4c + " units<br>" +
