@@ -201,7 +201,6 @@
         values.push(Number(value));
       });
 
-      //var breaks = ss.quantile(values, [0, 0.2, 0.3, 0.5,1]);
       var breaks = ss.equalIntervalBreaks(values, 5);
       console.log(breaks);
       return breaks;
@@ -217,26 +216,6 @@
                                     '#08519c';
         }
 
-    // // Function to set color of breaks
-    // function getColor(d, breaks) {
-    //   if (d <= breaks[0][1]) {
-    //       return '#eff3ff';
-    //   }
-    //   else if (d <= breaks[1][1]) {
-    //     return '#bdd7e7';
-    //   }
-    //   else if (d <= breaks[2][1]) {
-    //     return '#6baed6';
-    //   }
-    //   else if (d <= breaks[3][1]) {
-    //     return '#3182bd';
-    //   }
-    //   else if (d <= breaks[4][1]) {
-    //     //return '#006d2c';
-    //     return '#08519c';
-    //   }
-    // }
-
     // Function to draw the legend
     function drawLegend(breaks) {
 
@@ -251,7 +230,7 @@
       mapLegend.addTo(map);
 
       // Title for our legend
-      var html = "<h3>Percentage of White Residents (2000 Census)</h3>";
+      var html = "<h3>Percentage of White Residents (2010 Census)</h3>";
 
       // Select legend with jQuery
       var legend = $('.legend').html(html);
