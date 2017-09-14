@@ -68,6 +68,7 @@
     top: 20px;
     right: 20px;
     padding: 0;
+    background-color: gray;
   }
   #layer_selector ul {
     padding: 0; margin: 0;
@@ -178,17 +179,19 @@
      center: [37.949874, -122.348557], // Portrero and S.22nd
      zoom: 12,
      minZoom: 12,
-     maxZoom: 19,
+     maxZoom: 17,
      zoomControl: false,
    },
    // Create map object and pass it our options
    map = L.map('map', options);
 
    // Load map tiles from CARTO and add to map
-   var tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
-     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a> | Map Authored by <a href="https://bazini627.github.io/" target="blank">Matthew Bacinskas</a>',
+   var tiles = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
+     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
      subdomains: 'abcd',
-     maxZoom: 19
+     minZoom: 0,
+     maxZoom: 20,
+     ext: 'png'
    }).addTo(map);
 
    // Move zoom controls to bottom left
