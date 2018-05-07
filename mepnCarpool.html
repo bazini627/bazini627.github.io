@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>MEPN Carpool</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <script src="https://npmcdn.com/leaflet@0.7.7/dist/leaflet.js"></script>
+  <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js'></script>
+
+
+  <link rel="stylesheet" href="https://npmcdn.com/leaflet@0.7.7/dist/leaflet.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
+
+  <!-- style sheet for google fonts -->
+  <link href='//fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: whitesmoke;
+    font-family: "Vollkorn";
+    color: #0D0000;
+  }
+  #map {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+  }
+  h1 {
+    position: absolute;
+    z-index: 650;
+    top: 10px;
+    left: 15px;
+    padding: 8px 15px;
+    margin: 0;
+    color: whitesmoke;
+    font-size: 1.5em;
+    background: gray;
+    border-radius: 5px
+  }
+  </style>
+
+      <body>
+        <div id='map'></div>
+
+        <h1>MEPN Carpool 2018</h1>
+
+         <script>
+            var map;
+            var targetDiv = 'map';
+
+            var options = {
+               center: [37.935758, -122.347749],
+               zoomControl: false,
+               zoom: 11
+            }
+
+            map = L.map(targetDiv, options);
+
+            // Our tile layer
+            var tiles = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}', {
+              attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+              subdomains: 'abcd',
+              minZoom: 0,
+              maxZoom: 20,
+              ext: 'png'
+            });
+            map.addLayer(tiles);
+
+            // Move zoom control
+            L.control.zoom({position:'bottomright'}).addTo(map);
+
+            // Our Coordinates for our Farmers Markets
+            var carpoolCoords = [
+              [37.8227532, -122.2495594],
+              [37.760433, -122.225146],
+              [37.8092933, -122.2501674],
+              [37.8797791, -122.2671832],
+              [37.8218828, -122.2666737],
+              [37.9162108, -122.3517177],
+              [37.7823027, -122.1929408],
+              [37.8824042, -122.2721014],
+              [37.9009413, -122.2834875],
+            ];
+
+            var stethoscopeIcon = L.icon({
+              iconUrl: 'doctor-15.svg',
+              iconSize:     [23, 23], // size of the icon
+            });
+
+            // Loop through array and cluster/plot points
+            var markers = new L.MarkerClusterGroup();
+
+            for (var i = 0; i < carpoolCoords.length; i++) {
+
+               var clusterPoint = L.marker(carpoolCoords[i],{icon: stethoscopeIcon});
+               markers.addLayer(clusterPoint);
+            }
+            map.addLayer(markers);
+         </script>
+      </body>
+   </html>
