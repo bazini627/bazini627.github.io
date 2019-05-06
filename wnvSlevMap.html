@@ -181,28 +181,7 @@
                 },
                 'source-layer': 'caCountiesNoChannelIslands-85jvh9',
             });
-            
-            
-            // WNV Hex Bin Layer
-            map.addSource('wnv-hex', {
-                type: 'geojson',
-                data: './data/wnv2003_2018_cleaned_hex.geojson'
-            });
-            map.addLayer({
-                'id': 'wnv-hex',
-                'type': 'fill',
-                'source': 'wnv-hex',
-                'layout': {
-                    'visibility': 'visible'
-                },
-                "paint": {
-                    'fill-color': '#088',
-                    'fill-opacity': 0.8
-                },
-            }); 
-             // Set min/max zoom where will first appear/disappear
-             map.setLayerZoomRange('wnv-hex', 5.5, 10);
-
+          
             // WNV Layer
             map.addSource('WNV', {
                 type: 'vector',
@@ -221,7 +200,7 @@
                 'source-layer': 'original',
             });
             // Set min zoom where will first appear
-            map.setLayerZoomRange('WNV', 6);
+            map.setLayerZoomRange('WNV', 5.5);
 
             // SLEV Layer
             map.addSource('SLEV', {
@@ -241,7 +220,27 @@
                 'source-layer': 'sle2015_2018_cleaned',
             });
             // Set min zoom where will first appear
-            map.setLayerZoomRange('SLEV', 6);
+            map.setLayerZoomRange('SLEV', 5.5);
+
+            // WNV Hex Bin Layer
+            map.addSource('wnv-hex', {
+                type: 'geojson',
+                data: './data/wnv/output/wnv2003_2018_cleaned_hex.geojson'
+            });
+            map.addLayer({
+                'id': 'wnv-hex',
+                'type': 'fill',
+                'source': 'wnv-hex',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                "paint": {
+                    'fill-color': '#088',
+                    'fill-opacity': 0.4
+                },
+            }); 
+             // Set min/max zoom where will first appear/disappear
+             map.setLayerZoomRange('wnv-hex', 5.5, 10);
 
             // Function within varible to get mouseenter to work with both WNV and SLEV layers to be used below with map.on
             var f = function (e) {
