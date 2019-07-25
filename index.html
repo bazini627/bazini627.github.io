@@ -73,6 +73,14 @@
     margin-right: 20px;
     border: 2px solid #dddddd;
     }
+    #measles-image {
+    width: 388px;
+    height: 300px;
+    background: white;
+    float: left;
+    margin-right: 20px;
+    border: 2px solid #dddddd;
+    }
     .project #map5Text {
         overflow: hidden;
     }
@@ -211,6 +219,19 @@
             </li>
             <li>
               Data Sources: <a target = '_blank' href="http://geotracker.waterboards.ca.gov/">GeoTracker</a> for site locations.
+            </li>
+        </ul>
+    </section>
+    <section class="project">
+        <a target = "_blank"  href="maps/measlesBubble2019.pdf"><img src="images/measlesMap.PNG" alt="Map of Measles Cases In California 2019" class="project-image" id= 'measles-image' /></a>
+        <h3><a target = '_blank' href="maps/measlesBubble2019.pdf">Measles Cases In California 2019</a></h3>
+        <p>This map shows Measles cases reported in California for 2019 using proportional symbols to represent cases in a particular county.  R was used to create this map, along with the <a target = '_blank' href="https://www.rdocumentation.org/packages/sf/versions/0.7-7">sf</a>, <a target = '_blank' href="https://www.rdocumentation.org/packages/tmap/versions/2.2">tmap</a>, and <a target = '_blank' href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.8">dplyr</a> packages from the CRAN repository.</p>
+        <ul>
+            <li>
+                See the map: <a target = '_blank' href="maps/measlesBubble2019.pdf">Measles Cases In California 2019</a>
+            </li>
+            <li>
+                Data Sources: <a target = '_blank' href="https://www.cdph.ca.gov/Programs/CID/DCDC/Pages/Immunization/measles.aspx">CDPH Immunization Branch</a>
             </li>
         </ul>
     </section>
